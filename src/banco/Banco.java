@@ -1,18 +1,27 @@
 package banco;
 
+import banco.conta.Conta;
 import db.Db_;
 
+import java.util.Optional;
+
 public class Banco implements BancoOperacoes {
-        Db_ db = new Db_();
+    private final Db_ db = new Db_();
 
     @Override
-    public Boolean criarConta(BancoConta conta) {
+    public Boolean criarConta(Conta conta) {
         return db.inserir(conta);
     }
 
     @Override
+    public Optional<Conta> logar(String email, String senha) {
+        return db.logar(email, senha);
+    }
+
+
+    @Override
     public String depositar(Long valor, int numeroConta) {
-       BancoConta conta = db.achar(numeroConta);
+        Conta conta = db.achar(numeroConta);
 
         if (conta != null) {
             conta.setSaldo(conta.getSaldo() + valor);
@@ -25,7 +34,7 @@ public class Banco implements BancoOperacoes {
 
     @Override
     public String sacar(Long valor, int numeroConta) {
-        BancoConta conta = db.achar(numeroConta);
+        Conta conta = db.achar(numeroConta);
 
         if (conta != null) {
             if (conta.getSaldo() < 0 && valor > conta.getSaldo()) {
@@ -41,8 +50,8 @@ public class Banco implements BancoOperacoes {
 
     @Override
     public String transferir(Long valor, int numeroConta, int numeroContaDestino) {
-        BancoConta conta = db.achar(numeroConta);
-        BancoConta contaDestino = db.achar(numeroContaDestino);
+        Conta conta = db.achar(numeroConta);
+        Conta contaDestino = db.achar(numeroContaDestino);
 
         if (conta != null && contaDestino != null) {
             if (conta.getSaldo() < 0 && valor > conta.getSaldo()) {
@@ -63,7 +72,7 @@ public class Banco implements BancoOperacoes {
 
     @Override
     public void extrato(int numeroConta) {
-        BancoConta conta = db.achar(numeroConta);
+        Conta conta = db.achar(numeroConta);
 
         if (conta != null) {
             System.out.println(conta.getSaldo());
@@ -75,4 +84,5 @@ public class Banco implements BancoOperacoes {
     public void sair() {
         System.out.println("Saindo do sistema...");
     }
+
 }

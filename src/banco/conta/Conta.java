@@ -1,22 +1,23 @@
-package banco;
+package banco.conta;
 
 import usuario.Usuario;
 
 import java.util.UUID;
 
-public class BancoConta {
-    Usuario usuario;
-    Long saldo = 0L;
-    int numeroConta;
+public class Conta {
+    private Usuario usuario;
+    private Long saldo = 0L;
+    private int numeroConta;
+    private ContaTipo contaTipo;
 
-    public BancoConta() {
-
+    public Conta() {
     }
 
-    public BancoConta(Usuario usuario) {
+    public Conta(Usuario usuario, ContaTipo contaTipo) {
         this.usuario = usuario;
         this.saldo = 2500L;
-        this.numeroConta = UUID.randomUUID().hashCode() <0 ? -1 * UUID.randomUUID().hashCode() : UUID.randomUUID().hashCode();
+        this.numeroConta = UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : UUID.randomUUID().hashCode();
+        this.contaTipo = contaTipo;
     }
 
     public Usuario getUsuario() {
@@ -41,5 +42,13 @@ public class BancoConta {
 
     public void setNumeroConta(int numeroConta) {
         this.numeroConta = numeroConta;
+    }
+
+    public ContaTipo getContaTipo() {
+        return contaTipo;
+    }
+
+    public void setContaTipo(ContaTipo contaTipo) {
+        this.contaTipo = contaTipo;
     }
 }
