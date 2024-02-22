@@ -1,43 +1,53 @@
 package db;
 
-import banco.BancoConta;
-import usuario.Usuario;
+import banco.conta.Conta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Db_ implements Db {
-    List<BancoConta> dbContas = new ArrayList<>();
+    List<Conta> dbContas = new ArrayList<>();
 
     @Override
-    public List<BancoConta> bancoDeDados() {
+    public List<Conta> bancoDeDados() {
         return dbContas;
     }
 
     @Override
-    public Boolean inserir(BancoConta conta) {
+    public Boolean inserir(Conta conta) {
         return dbContas.add(conta);
     }
 
     @Override
-    public BancoConta atualizar(BancoConta conta) {
+    public Conta atualizar(Conta conta) {
         return dbContas.set(dbContas.indexOf(conta), conta);
     }
 
     @Override
-    public Boolean exluir(BancoConta conta) {
+    public Boolean exluir(Conta conta) {
         return dbContas.remove(conta);
     }
 
     @Override
-    public BancoConta achar(int numeroConta) {
-
-        for (BancoConta conta : dbContas) {
+    public Conta achar(int numeroConta) {
+        for (Conta conta : dbContas) {
             if (conta.getNumeroConta() == numeroConta) {
                 return conta;
             }
         }
 
         return null;
+    }
+
+    @Override
+    public Optional<Conta> logar(String email, String senha) {
+        for (Conta conta : dbContas) {
+            if (conta.getUsuario().email().equals(email) && conta.getUsuario().senha().equals(senha)) {
+                return Optional.of(conta);
+            }
+        }
+
+        return Optional.empty();
     }
 }
