@@ -2,6 +2,7 @@ package banco;
 
 import banco.conta.Conta;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BancoOperacoes {
@@ -18,5 +19,7 @@ public interface BancoOperacoes {
     void extrato(int numeroConta);
 
     void sair();
+
+    List<Conta> listarContas();
 
 }

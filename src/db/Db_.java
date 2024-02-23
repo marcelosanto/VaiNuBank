@@ -50,4 +50,8 @@ public class Db_ implements Db {
 
         return Optional.empty();
     }
+
+    public List<Conta> getDbContas() {
+        return dbContas;
+    }
 }

@@ -3,6 +3,7 @@ package banco;
 import banco.conta.Conta;
 import db.Db_;
 
+import java.util.List;
 import java.util.Optional;
 
 public class Banco implements BancoOperacoes {
@@ -83,6 +84,11 @@ public class Banco implements BancoOperacoes {
     @Override
     public void sair() {
         System.out.println("Saindo do sistema...");
+    }
+
+    @Override
+    public List<Conta> listarContas() {
+        return db.getDbContas();
     }
 
 }

@@ -5,6 +5,7 @@ import banco.conta.Conta;
 import banco.conta.ContaTipo;
 import usuario.Usuario;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
@@ -21,7 +22,8 @@ public class Intro {
             System.out.println("1 - Criar uma conta");
             System.out.println("2 - Acessar a conta");
             System.out.println("3 - Fazer transferencia");
-            System.out.println("4 - Sair");
+            System.out.println("4 - Ver Contas");
+            System.out.println("5 - Sair");
             System.out.print(": ");
 
             String escolha = sc.nextLine();
@@ -34,23 +36,57 @@ public class Intro {
                     System.out.print("Conta criada com sucesso! " + resultado);
                     break;
                 case "2":
-//                    String email = fazerPergunta("Digite seu email: ", sc);
-//                    String senha = fazerPergunta("Digite sua senha: ", sc);
-//                    conta = banco.logar(email, senha);
-
-                    // System.out.println("conta: " + conta.getUsuario().nome());
-
                     Optional<Conta> contaLogada = fazerLogin(banco, sc);
 
                     if (contaLogada.isPresent()) {
                         conta = contaLogada.get();
+                        while (true) {
+                            System.out.println("Escolha uma opção:");
+                            System.out.println("1 - Depositar");
+                            System.out.println("2 - Sacar");
+                            System.out.println("3 - Transferir");
+                            System.out.println("4 - Extrato");
+                            System.out.println("5 - Sair");
+                            System.out.print(": ");
+
+                            escolha = sc.nextLine();
+
+                            switch (escolha) {
+                                case "1":
+                                    System.out.println("Depositar");
+                                    break;
+                                case "2":
+                                    System.out.println("Sacar");
+                                    break;
+                                case "3":
+                                    System.out.println("Transferir");
+                                    break;
+                                case "4":
+                                    System.out.println("Extrato");
+                                    System.out.println(conta.getSaldo());
+                                    break;
+                                case "5":
+                                    System.out.println("Saindo...");
+                                    sc.close();
+                                    return;
+                                default:
+                                    System.out.println("Opção inválida");
+                            }
+                        }
                     }
-                    
+
                     break;
                 case "3":
                     System.out.println("Fazer transferencia");
                     break;
                 case "4":
+                    System.out.println("Ver Contas");
+
+                    List<Conta> contas = banco.listarContas();
+                    System.out.println(contas.getFirst().getUsuario().nome());
+
+                    break;
+                case "5":
                     System.out.println("Saindo...");
                     sc.close();
                     return;
@@ -72,7 +108,13 @@ public class Intro {
 
         Usuario usuario = new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), nome, sobrenome, cpf, email, senha);
 
-        //scanner.close();
+        String tipoConta = fazerPergunta("Qual é o tipo de conta que deseja criar 1 - Corrente, 2 - Poupança?", scanner);
+
+        if (tipoConta.equals("1")) {
+            return new CustomRetorno(usuario, ContaTipo.CORRENTE);
+        } else if (tipoConta.equals("2")) {
+            return new CustomRetorno(usuario, ContaTipo.POUPANCA);
+        }
 
         return new CustomRetorno(usuario, ContaTipo.CORRENTE);
     }
