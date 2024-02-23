@@ -8,13 +8,15 @@ import java.util.Optional;
 public interface BancoOperacoes {
     Boolean criarConta(Conta conta);
 
+    Boolean acharConta(int contaNumero);
+
     Optional<Conta> logar(String email, String senha);
 
-    String depositar(Long valor, int numeroConta);
+    String depositar(Double valor, Conta conta_);
 
-    String sacar(Long valor, int numeroConta);
+    String sacar(Double valor, Conta conta_);
 
-    String transferir(Long valor, int numeroConta, int numeroContaDestino);
+    String transferir(Double valor, Conta conta_, int numeroContaDestino);
 
     void extrato(int numeroConta);
 

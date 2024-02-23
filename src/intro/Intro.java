@@ -1,20 +1,26 @@
 package intro;
 
 import banco.Banco;
+import banco.agencia.Agencia;
 import banco.conta.Conta;
 import banco.conta.ContaTipo;
 import usuario.Usuario;
+import utils.Parses;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 public class Intro {
     public static void inicio() {
         Scanner sc = new Scanner(System.in);
         Banco banco = new Banco();
         Conta conta;
+        boolean logado = true;
+
+        conta = new Conta(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Marcelo", "Santos", "1111111", "s", "s"), new Agencia(4293, "Vai no banco"), 12345, ContaTipo.POUPANCA);
+        banco.criarConta(conta);
+
+        conta = new Conta(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Alice", "Santos", "1111111", "ss", "ss"), new Agencia(4293, "Vai no banco"), 54321, ContaTipo.CORRENTE);
+        banco.criarConta(conta);
 
         while (true) {
             System.out.println("Bem vindo ao VaiNuBank");
@@ -31,16 +37,28 @@ public class Intro {
             switch (escolha) {
                 case "1":
                     CustomRetorno retorno = criarUser(sc);
-                    conta = new Conta(retorno.usuario(), retorno.contaTipo());
-                    Boolean resultado = banco.criarConta(conta);
-                    System.out.print("Conta criada com sucesso! " + resultado);
+                    while (true) {
+                        int numeroConta = new Random().nextInt(99999);
+
+                        if (!banco.acharConta(numeroConta)) {
+                            conta = new Conta(retorno.usuario(), new Agencia(4293, "Vai no banco"), numeroConta, retorno.contaTipo());
+                            Boolean resultado = banco.criarConta(conta);
+
+                            System.out.print("Conta criada com sucesso! " + resultado);
+                            break;
+                        }
+                    }
                     break;
+
                 case "2":
                     Optional<Conta> contaLogada = fazerLogin(banco, sc);
+                    Double valor = 0.0;
 
                     if (contaLogada.isPresent()) {
                         conta = contaLogada.get();
-                        while (true) {
+                        logado = true;
+
+                        while (logado) {
                             System.out.println("Escolha uma opção:");
                             System.out.println("1 - Depositar");
                             System.out.println("2 - Sacar");
@@ -54,21 +72,28 @@ public class Intro {
                             switch (escolha) {
                                 case "1":
                                     System.out.println("Depositar");
+                                    valor = Parses.parseDouble(fazerPergunta("Qual é o valor?", sc));
+                                    System.out.println(banco.depositar(valor, conta));
                                     break;
                                 case "2":
                                     System.out.println("Sacar");
+                                    valor = Parses.parseDouble(fazerPergunta("Qual é o valor?", sc));
+                                    System.out.println(banco.sacar(valor, conta));
                                     break;
                                 case "3":
                                     System.out.println("Transferir");
+                                    int destino = Parses.parseInt(fazerPergunta("Qual é o numero da conta destino?", sc));
+                                    valor = Parses.parseDouble(fazerPergunta("Qual é o valor?", sc));
+                                    System.out.println(banco.transferir(valor, conta, destino));
+
                                     break;
                                 case "4":
                                     System.out.println("Extrato");
-                                    System.out.println(conta.getSaldo());
+                                    banco.extrato(conta.getNumeroConta());
                                     break;
                                 case "5":
                                     System.out.println("Saindo...");
-                                    sc.close();
-                                    return;
+                                    logado = false;
                                 default:
                                     System.out.println("Opção inválida");
                             }
@@ -78,12 +103,16 @@ public class Intro {
                     break;
                 case "3":
                     System.out.println("Fazer transferencia");
+
                     break;
                 case "4":
                     System.out.println("Ver Contas");
 
                     List<Conta> contas = banco.listarContas();
-                    System.out.println(contas.getFirst().getUsuario().nome());
+
+                    for (Conta c : contas) {
+                        System.out.println(c.getUsuario().nome() + " " + c.getNumeroConta());
+                    }
 
                     break;
                 case "5":
@@ -99,14 +128,14 @@ public class Intro {
     }
 
     public static CustomRetorno criarUser(Scanner scanner) {
-        //Scanner scanner = new Scanner(System.in);
         String nome = fazerPergunta("Qual é o seu nome?", scanner);
         String sobrenome = fazerPergunta("Qual é o seu sobrenome?", scanner);
         String cpf = fazerPergunta("Qual é o seu cpf?", scanner);
         String email = fazerPergunta("Qual é o seu email?", scanner);
         String senha = fazerPergunta("Qual é a sua senha?", scanner);
+        int gerarID = UUID.randomUUID().hashCode();
 
-        Usuario usuario = new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), nome, sobrenome, cpf, email, senha);
+        Usuario usuario = new Usuario(gerarID < 0 ? -1 * gerarID : (long) gerarID, nome, sobrenome, cpf, email, senha);
 
         String tipoConta = fazerPergunta("Qual é o tipo de conta que deseja criar 1 - Corrente, 2 - Poupança?", scanner);
 
@@ -163,6 +192,5 @@ public class Intro {
 
         return conta;
     }
-
-
+    
 }

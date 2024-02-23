@@ -1,23 +1,38 @@
 package banco.conta;
 
+import banco.agencia.Agencia;
 import usuario.Usuario;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Conta {
     private Usuario usuario;
-    private Long saldo = 0L;
+    private Agencia agencia;
+    private Double saldo = 0.0;
     private int numeroConta;
     private ContaTipo contaTipo;
+
+    private List<ContaOperacoes> historico = new ArrayList<>();
 
     public Conta() {
     }
 
-    public Conta(Usuario usuario, ContaTipo contaTipo) {
+    public Conta(Usuario usuario, Agencia agencia, int numeroConta, ContaTipo contaTipo) {
         this.usuario = usuario;
-        this.saldo = 2500L;
-        this.numeroConta = UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : UUID.randomUUID().hashCode();
+        this.agencia = agencia;
+        this.saldo = 2500.0;
+        this.numeroConta = numeroConta;
         this.contaTipo = contaTipo;
+        this.historico = new ArrayList<>();
+    }
+
+    public Conta(Usuario usuario, Double saldo, int numeroConta, ContaTipo contaTipo, List<ContaOperacoes> historico) {
+        this.usuario = usuario;
+        this.saldo = saldo;
+        this.numeroConta = numeroConta;
+        this.contaTipo = contaTipo;
+        this.historico = historico;
     }
 
     public Usuario getUsuario() {
@@ -28,11 +43,19 @@ public class Conta {
         this.usuario = usuario;
     }
 
-    public Long getSaldo() {
+    public Agencia getAgencia() {
+        return agencia;
+    }
+
+    public void setAgencia(Agencia agencia) {
+        this.agencia = agencia;
+    }
+
+    public Double getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(Long saldo) {
+    public void setSaldo(Double saldo) {
         this.saldo = saldo;
     }
 
@@ -50,5 +73,13 @@ public class Conta {
 
     public void setContaTipo(ContaTipo contaTipo) {
         this.contaTipo = contaTipo;
+    }
+
+    public List<ContaOperacoes> getHistorico() {
+        return historico;
+    }
+
+    public void setHistorico(List<ContaOperacoes> historico) {
+        this.historico = historico;
     }
 }
