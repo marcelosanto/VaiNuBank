@@ -18,29 +18,29 @@ import java.util.Random;
 
 public class Banco implements BancoOperacoes {
     private final Db_ db = new Db_();
-    private final List<ContaOperacoes> historico = new ArrayList<>();
-
     private final Loterias lotecas = new Loterias();
 
 
     @Override
     public Boolean criarConta(Usuario usuario, ContaTipo contaTipo) {
         Conta conta;
+
         while (true) {
             int numeroConta = new Random().nextInt(99999);
 
-            if (!acharConta(numeroConta)) {
-                conta = new Conta(usuario, new Agencia(4293, "Vai no banco"), numeroConta, contaTipo);
+            if (!acharConta(usuario.email())) {
+                conta = new Conta(usuario, new Agencia(4293, "Vai no banco"), 2500.0, numeroConta, contaTipo, List.of());
                 System.out.print("Conta criada com sucesso! ");
                 break;
             }
         }
+
         return db.inserir(conta);
     }
 
     @Override
-    public Boolean acharConta(int contaNumero) {
-        return db.achar(contaNumero) != null;
+    public Boolean acharConta(String email) {
+        return db.achar(email) != null;
     }
 
     @Override
@@ -50,14 +50,23 @@ public class Banco implements BancoOperacoes {
 
 
     @Override
-    public String depositar(Double valor, Conta conta_) {
-        Conta conta = db.achar(conta_.getNumeroConta());
+    public String depositar(Double valor, Conta conta_, Operacoes operacoes, String nome) {
+        Conta conta = db.achar(conta_.getUsuario().email());
 
         if (conta != null) {
             conta.setSaldo(conta.getSaldo() + valor);
-            historico.add(new ContaOperacoes(Operacoes.DEPOSITAR, valor, conta.getUsuario().nome(), null));
+
+            List<ContaOperacoes> historico = new ArrayList<>();
+
+            if (!conta.getHistorico().isEmpty()) {
+                historico.addAll(conta.getHistorico());
+            }
+
+            historico.add(new ContaOperacoes(operacoes, valor, nome, null));
+
             conta.setHistorico(historico);
             db.atualizar(conta);
+
             return "Deposito realizado";
         }
 
@@ -65,9 +74,34 @@ public class Banco implements BancoOperacoes {
     }
 
     @Override
-    public String sacar(Double valor, Conta conta_) {
-        Conta conta = db.achar(conta_.getNumeroConta());
+    public String cobrar(Double valor, Conta conta_, Operacoes operacoes, String nome) {
 
+        Conta conta = db.achar(conta_.getUsuario().email());
+
+        if (conta != null && conta.getSaldo() >= valor) {
+
+            conta.setSaldo(conta.getSaldo() - valor);
+
+            List<ContaOperacoes> historico = new ArrayList<>();
+
+            if (!conta.getHistorico().isEmpty()) {
+                historico.addAll(conta.getHistorico());
+            }
+
+            historico.add(new ContaOperacoes(operacoes, valor, nome, null));
+            conta.setHistorico(historico);
+            db.atualizar(conta);
+
+
+            return "Valor cobrado";
+        }
+
+        return "Erro ao realizar a cobrança";
+    }
+
+
+    @Override
+    public String sacar(Double valor, Conta conta) {
         if (conta != null) {
             if (conta.getSaldo() < 0 && valor > conta.getSaldo()) {
                 return "Saldo insuficiente";
@@ -81,12 +115,24 @@ public class Banco implements BancoOperacoes {
                     return "Saldo insuficiente";
                 }
 
+                List<ContaOperacoes> historico = new ArrayList<>();
+
+                if (!conta.getHistorico().isEmpty()) {
+                    historico.addAll(conta.getHistorico());
+                }
+
                 conta.setSaldo(conta.getSaldo() - valorMenosPorcentagem - juros);
                 historico.add(new ContaOperacoes(Operacoes.SACAR, valorMenosPorcentagem, conta.getUsuario().nome(), juros));
                 conta.setHistorico(historico);
                 db.atualizar(conta);
 
                 return "Transferencia realizada";
+            }
+
+            List<ContaOperacoes> historico = new ArrayList<>();
+
+            if (!conta.getHistorico().isEmpty()) {
+                historico.addAll(conta.getHistorico());
             }
 
             conta.setSaldo(conta.getSaldo() - valor);
@@ -101,23 +147,17 @@ public class Banco implements BancoOperacoes {
     }
 
     @Override
-    public String transferir(Double valor, Conta conta_, int numeroContaDestino) {
-        Conta conta = db.achar(conta_.getNumeroConta());
-        Conta contaDestino = db.achar(numeroContaDestino);
+    public String transferir(Double valor, Conta conta, String email) {
+        Conta contaDestino = db.achar(email);
 
         if (conta != null && contaDestino != null) {
             if (conta.getSaldo() < 0 && valor > conta.getSaldo()) {
                 return "Saldo insuficiente";
             }
 
-            conta.setSaldo(conta.getSaldo() - valor);
-            historico.add(new ContaOperacoes(Operacoes.TRANSFERENCIA, valor, contaDestino.getUsuario().nome(), null));
-            conta.setHistorico(historico);
-            db.atualizar(conta);
+            cobrar(valor, conta, Operacoes.TRANSFERENCIA, contaDestino.getUsuario().nome());
 
-            contaDestino.setSaldo(contaDestino.getSaldo() + valor);
-            contaDestino.setHistorico(List.of(new ContaOperacoes(Operacoes.RECEBIDO, valor, conta.getUsuario().nome(), null)));
-            db.atualizar(contaDestino);
+            depositar(valor, contaDestino, Operacoes.RECEBIDO, conta.getUsuario().nome());
 
             return "Transferencia realizada";
         }
@@ -126,9 +166,7 @@ public class Banco implements BancoOperacoes {
     }
 
     @Override
-    public void extrato(int numeroConta) {
-        Conta conta = db.achar(numeroConta);
-
+    public void extrato(Conta conta) {
         if (conta != null) {
             Prints.printExtratoConta(conta);
         }
@@ -141,23 +179,21 @@ public class Banco implements BancoOperacoes {
     }
 
     @Override
-    public void loterias(LoteriasTipos loterias, List<Integer> numerosJogados, String times) {
-        lotecas.realizarSorteio(loterias, numerosJogados, times); // vem como int 0 - Não ganhou, 1 - Ganhador, 2 - Ganhador em Time + Aposta
+    public void loterias(Conta conta, LoteriasTipos loterias, List<Integer> numerosJogados, String times) {
+        Double valorGanho = lotecas.realizarSorteio(loterias, numerosJogados, times);
 
+        if (valorGanho > 0.0) {
+            depositar(valorGanho, conta, Operacoes.LOTERIAS, loterias.name());
+        }
     }
 
     @Override
-    public Boolean cobrarAposta(Conta conta_, Double valor) {
-        Conta conta = db.achar(conta_.getNumeroConta());
-
+    public Boolean cobrarAposta(Conta conta, Double valor) {
         if (conta.getSaldo() < valor) {
             return false;
         }
 
-        conta.setSaldo(conta.getSaldo() - valor);
-        historico.add(new ContaOperacoes(Operacoes.LOTERIAS, valor, conta.getUsuario().nome(), null));
-        conta.setHistorico(historico);
-        db.atualizar(conta);
+        cobrar(valor, conta, Operacoes.LOTERIAS, conta.getUsuario().nome());
 
         return true;
     }

@@ -55,10 +55,11 @@ public class Loterias {
         return (aposta * 4) * regras.getValorDasApostas(tipos);
     }
 
-    public int realizarSorteio(LoteriasTipos loterias, List<Integer> numerosJogados, String times) {
+    public Double realizarSorteio(LoteriasTipos loterias, List<Integer> numerosJogados, String times) {
         int resultado = 0;
         int resultadoDosTimes = 0;
         TreeSet<Integer> randoms;
+        double valorPremio = 0.0;
 
         switch (loterias) {
             case MEGA_SENA:
@@ -83,15 +84,24 @@ public class Loterias {
                 break;
         }
 
-        return resultado + resultadoDosTimes;
+        // vem como int 0 - Não ganhou, 1 - Ganhador, 2 - Ganhador em Time + Aposta
+
+        if (resultado > 0) {
+            valorPremio = LoteriasPremios.loteriasPremios(loterias);
+            if (loterias == LoteriasTipos.TIMEMANIA && resultadoDosTimes == 0) {
+                valorPremio = valorPremio / 2;
+            }
+        }
+
+        return valorPremio;
     }
+
 
     private int resultadoDosTimes(String times, String s) {
         if (Objects.equals(times, s)) {
             System.out.println("Parabens, voce acertou o Time do coração");
             return 1;
         }
-
         return 0;
     }
 }

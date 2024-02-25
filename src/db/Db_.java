@@ -4,6 +4,7 @@ import banco.conta.Conta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Db_ implements Db {
@@ -31,13 +32,12 @@ public class Db_ implements Db {
     }
 
     @Override
-    public Conta achar(int numeroConta) {
+    public Conta achar(String email) {
         for (Conta conta : dbContas) {
-            if (conta.getNumeroConta() == numeroConta) {
+            if (Objects.equals(conta.getUsuario().email(), email)) {
                 return conta;
             }
         }
-
         return null;
     }
 

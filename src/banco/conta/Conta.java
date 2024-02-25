@@ -18,17 +18,9 @@ public class Conta {
     public Conta() {
     }
 
-    public Conta(Usuario usuario, Agencia agencia, int numeroConta, ContaTipo contaTipo) {
+    public Conta(Usuario usuario, Agencia agencia, Double saldo, int numeroConta, ContaTipo contaTipo, List<ContaOperacoes> historico) {
         this.usuario = usuario;
         this.agencia = agencia;
-        this.saldo = 2500.0;
-        this.numeroConta = numeroConta;
-        this.contaTipo = contaTipo;
-        this.historico = new ArrayList<>();
-    }
-
-    public Conta(Usuario usuario, Double saldo, int numeroConta, ContaTipo contaTipo, List<ContaOperacoes> historico) {
-        this.usuario = usuario;
         this.saldo = saldo;
         this.numeroConta = numeroConta;
         this.contaTipo = contaTipo;

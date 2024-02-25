@@ -3,6 +3,7 @@ package intro;
 import banco.Banco;
 import banco.conta.Conta;
 import banco.conta.ContaTipo;
+import banco.conta.Operacoes;
 import banco.loterias.LoteriasRegras;
 import banco.loterias.LoteriasTipos;
 import usuario.Usuario;
@@ -17,9 +18,7 @@ public class Intro {
         Banco banco = new Banco();
         CustomRetorno custom;
         Conta conta;
-        boolean logado = true;
-        List<Integer> numerosJogados = new ArrayList<>();
-        int numerosDeAposta;
+        boolean logado;
 
         custom = new CustomRetorno(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Marcelo", "Santos", "1111111", "s", "s"), ContaTipo.POUPANCA);
         banco.criarConta(custom.usuario(), custom.contaTipo());
@@ -29,13 +28,19 @@ public class Intro {
 
         while (true) {
             Menu.menuBancoPrincipal();
-
             String escolha = sc.nextLine();
 
             switch (escolha) {
                 case "1":
-                    CustomRetorno retorno = criarUser(sc);
-                    banco.criarConta(retorno.usuario(), retorno.contaTipo());
+                    while (true) {
+                        CustomRetorno retorno = criarUser(sc);
+                        boolean criado = banco.criarConta(retorno.usuario(), retorno.contaTipo());
+                        if (criado) {
+                            System.out.println("Email/CPF ja cadastrado...");
+                            break;
+                        }
+                    }
+
                     break;
 
                 case "2":
@@ -55,7 +60,7 @@ public class Intro {
                                 case "1":
                                     System.out.println("Depositar");
                                     valor = Parses.parseDouble(fazerPergunta("Qual é o valor?", sc));
-                                    System.out.println(banco.depositar(valor, conta));
+                                    System.out.println(banco.depositar(valor, conta, Operacoes.DEPOSITAR, conta.getUsuario().nome()));
                                     break;
                                 case "2":
                                     System.out.println("Sacar");
@@ -64,17 +69,17 @@ public class Intro {
                                     break;
                                 case "3":
                                     System.out.println("Transferir");
-                                    int destino = Parses.parseInt(fazerPergunta("Qual é o numero da conta destino?", sc));
+                                    String destino = fazerPergunta("Qual é o email da conta destino?", sc);
                                     valor = Parses.parseDouble(fazerPergunta("Qual é o valor?", sc));
                                     System.out.println(banco.transferir(valor, conta, destino));
 
                                     break;
                                 case "4":
                                     System.out.println("Extrato");
-                                    banco.extrato(conta.getNumeroConta());
+                                    banco.extrato(conta);
                                     break;
                                 case "5":
-                                    System.out.println("Bem vindo a loterias online, \nMega Sena com premio de £3.000.000 Quatrums, \nQuina com premio de £200.000 Quatrums, \nLotofacil com premio de £500.000 Quatrums, \nTimemania com premio de £100.000 Quatrums");
+                                    System.out.println("Bem vindo a loterias online, \nMega Sena com premio de £3.000.000 Quatrums, \nQuina com premio de £200.000 Quatrums, \nLotofacil com premio de £500.000 Quatrums, \nTimemania com premio de £100.000 Quatrums.");
 
                                     String loteca = fazerPergunta("1 - Mega Sena, 2 - Quina, 3 - Lotofácil, 4 - Timemania", sc);
 
@@ -110,7 +115,8 @@ public class Intro {
                     System.out.println("Ver Contas");
                     List<Conta> contas = banco.listarContas();
                     Menu.verContas(contas);
-                    sc.next("Aperte ENTER para voltar");
+                    System.out.println("Aperte ENTER para voltar");
+                    sc.nextLine();
                     break;
                 case "4":
                     System.out.println("Saindo...");
@@ -189,10 +195,10 @@ public class Intro {
 
             int timeEscolhido = Parses.parseInt(fazerPergunta("Escolha o numero do Time", sc));
 
-            banco.loterias(tipos, numerosJogados, times.getMaioresTimes().get(timeEscolhido - 1));
+            banco.loterias(conta, tipos, numerosJogados, times.getMaioresTimes().get(timeEscolhido - 1));
 
         } else {
-            banco.loterias(tipos, numerosJogados, null);
+            banco.loterias(conta, tipos, numerosJogados, null);
         }
 
 
