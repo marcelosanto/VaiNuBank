@@ -4,6 +4,9 @@ import banco.conta.Conta;
 import banco.conta.ContaOperacoes;
 import banco.conta.ContaTipo;
 import banco.conta.Operacoes;
+import banco.loterias.Loterias;
+import banco.loterias.LoteriasTipos;
+import banco.print.Prints;
 import db.Db_;
 
 import java.util.ArrayList;
@@ -13,6 +16,8 @@ import java.util.Optional;
 public class Banco implements BancoOperacoes {
     private final Db_ db = new Db_();
     private final List<ContaOperacoes> historico = new ArrayList<>();
+
+    private final Loterias lotecas = new Loterias();
 
 
     @Override
@@ -112,30 +117,38 @@ public class Banco implements BancoOperacoes {
         Conta conta = db.achar(numeroConta);
 
         if (conta != null) {
-            System.out.println("| -- BANCO: " + conta.getAgencia().nome() + " -------------------- -- |");
-            System.out.println("| -- AG: " + conta.getAgencia().numero() + " -- CONTA-" + conta.getContaTipo() + ": " + conta.getNumeroConta() + " -- |");
-            System.out.println("| -- CLIENTE: " + conta.getUsuario().nome() + " " + conta.getUsuario().sobrenome() + "-- |");
-            System.out.println("| -- -------------------------------- -- |");
-
-            System.out.println("| -- TRANSAÇÕES:-- |");
-            for (ContaOperacoes historico : conta.getHistorico()) {
-                String juros = historico.juros() != null ? historico.juros().toString() : " ";
-                System.out.println("| -- " + historico.operacoes() + ": " + historico.valor() + " - " + historico.nome() + " - " + juros + " -- |");
-            }
-            System.out.println("| -- -------------------------------- -- |");
-            System.out.println("| -- SALDO: R$ " + conta.getSaldo() + " -- |");
-            System.out.println("| -- -------------------------------- -- |");
-
-
-            //System.out.println(String.format("%-32s", "--------------------------------"));
+            Prints.printExtratoConta(conta);
         }
 
     }
 
     @Override
-    public void sair() {
-        System.out.println("Saindo do sistema...");
+    public Double loteriasValorDaAposta(int numerosDeAposta, LoteriasTipos tipos) {
+        return lotecas.valorDaAposta(numerosDeAposta, tipos);
     }
+
+    @Override
+    public void loterias(LoteriasTipos loterias, List<Integer> numerosJogados, String times) {
+        lotecas.realizarSorteio(loterias, numerosJogados, times); // vem como int 0 - Não ganhou, 1 - Ganhador, 2 - Ganhador em Time + Aposta
+
+    }
+
+    @Override
+    public Boolean cobrarAposta(Conta conta_, Double valor) {
+        Conta conta = db.achar(conta_.getNumeroConta());
+
+        if (conta.getSaldo() < valor) {
+            return false;
+        }
+
+        conta.setSaldo(conta.getSaldo() - valor);
+        historico.add(new ContaOperacoes(Operacoes.LOTERIAS, valor, conta.getUsuario().nome(), null));
+        conta.setHistorico(historico);
+        db.atualizar(conta);
+
+        return true;
+    }
+
 
     @Override
     public List<Conta> listarContas() {

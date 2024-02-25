@@ -4,5 +4,6 @@ public enum Operacoes {
     DEPOSITAR,
     SACAR,
     TRANSFERENCIA,
-    RECEBIDO
+    RECEBIDO,
+    LOTERIAS
 }
