@@ -1,7 +1,6 @@
 package intro;
 
 import banco.Banco;
-import banco.agencia.Agencia;
 import banco.conta.Conta;
 import banco.conta.ContaTipo;
 import banco.loterias.LoteriasRegras;
@@ -16,43 +15,27 @@ public class Intro {
     public static void inicio() {
         Scanner sc = new Scanner(System.in);
         Banco banco = new Banco();
+        CustomRetorno custom;
         Conta conta;
         boolean logado = true;
         List<Integer> numerosJogados = new ArrayList<>();
         int numerosDeAposta;
 
-        conta = new Conta(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Marcelo", "Santos", "1111111", "s", "s"), new Agencia(4293, "Vai no banco"), 12345, ContaTipo.POUPANCA);
-        banco.criarConta(conta);
+        custom = new CustomRetorno(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Marcelo", "Santos", "1111111", "s", "s"), ContaTipo.POUPANCA);
+        banco.criarConta(custom.usuario(), custom.contaTipo());
 
-        conta = new Conta(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Alice", "Santos", "1111111", "ss", "ss"), new Agencia(4293, "Vai no banco"), 54321, ContaTipo.CORRENTE);
-        banco.criarConta(conta);
+        custom = new CustomRetorno(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Alice", "Santos", "1111111", "ss", "ss"), ContaTipo.CORRENTE);
+        banco.criarConta(custom.usuario(), custom.contaTipo());
 
         while (true) {
-            System.out.println();
-            System.out.println("Bem vindo ao VaiNuBank");
-            System.out.println("Escolha uma opção:");
-            System.out.println("1 - Criar uma conta");
-            System.out.println("2 - Acessar a conta");
-            System.out.println("3 - Ver Contas");
-            System.out.println("4 - Sair");
-            System.out.print(": ");
+            Menu.menuBancoPrincipal();
 
             String escolha = sc.nextLine();
 
             switch (escolha) {
                 case "1":
                     CustomRetorno retorno = criarUser(sc);
-                    while (true) {
-                        int numeroConta = new Random().nextInt(99999);
-
-                        if (!banco.acharConta(numeroConta)) {
-                            conta = new Conta(retorno.usuario(), new Agencia(4293, "Vai no banco"), numeroConta, retorno.contaTipo());
-                            Boolean resultado = banco.criarConta(conta);
-
-                            System.out.print("Conta criada com sucesso! " + resultado);
-                            break;
-                        }
-                    }
+                    banco.criarConta(retorno.usuario(), retorno.contaTipo());
                     break;
 
                 case "2":
@@ -64,15 +47,7 @@ public class Intro {
                         logado = true;
 
                         while (logado) {
-                            System.out.println();
-                            System.out.println("Escolha uma opção:");
-                            System.out.println("1 - Depositar");
-                            System.out.println("2 - Sacar");
-                            System.out.println("3 - Transferir");
-                            System.out.println("4 - Extrato");
-                            System.out.println("5 - Loterias");
-                            System.out.println("6 - Sair");
-                            System.out.print(": ");
+                            Menu.menuBancoLogado();
 
                             escolha = sc.nextLine();
 
@@ -119,7 +94,6 @@ public class Intro {
                                         default:
                                             System.out.println("Opção inválida");
                                     }
-
                                     break;
                                 case "6":
                                     System.out.println("Saindo...");
@@ -134,17 +108,9 @@ public class Intro {
 
                 case "3":
                     System.out.println("Ver Contas");
-
                     List<Conta> contas = banco.listarContas();
-
-                    System.out.println("| -- -------------------------------- -- |");
-                    for (Conta c : contas) {
-                        System.out.println("| -- Nome: " + c.getUsuario().nome() + " - Banco: " + c.getAgencia().nome() + " - Nº Conta: " + c.getNumeroConta() + " -- |");
-                    }
-                    System.out.println("| -- -------------------------------- -- |");
-
-                    fazerPergunta("Aperte ENTER para voltar", sc);
-
+                    Menu.verContas(contas);
+                    sc.next("Aperte ENTER para voltar");
                     break;
                 case "4":
                     System.out.println("Saindo...");

@@ -1,5 +1,6 @@
 package banco;
 
+import banco.agencia.Agencia;
 import banco.conta.Conta;
 import banco.conta.ContaOperacoes;
 import banco.conta.ContaTipo;
@@ -8,10 +9,12 @@ import banco.loterias.Loterias;
 import banco.loterias.LoteriasTipos;
 import banco.print.Prints;
 import db.Db_;
+import usuario.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 public class Banco implements BancoOperacoes {
     private final Db_ db = new Db_();
@@ -21,7 +24,17 @@ public class Banco implements BancoOperacoes {
 
 
     @Override
-    public Boolean criarConta(Conta conta) {
+    public Boolean criarConta(Usuario usuario, ContaTipo contaTipo) {
+        Conta conta;
+        while (true) {
+            int numeroConta = new Random().nextInt(99999);
+
+            if (!acharConta(numeroConta)) {
+                conta = new Conta(usuario, new Agencia(4293, "Vai no banco"), numeroConta, contaTipo);
+                System.out.print("Conta criada com sucesso! ");
+                break;
+            }
+        }
         return db.inserir(conta);
     }
 

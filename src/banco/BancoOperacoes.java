@@ -1,13 +1,15 @@
 package banco;
 
 import banco.conta.Conta;
+import banco.conta.ContaTipo;
 import banco.loterias.LoteriasTipos;
+import usuario.Usuario;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface BancoOperacoes {
-    Boolean criarConta(Conta conta);
+    Boolean criarConta(Usuario usuario, ContaTipo contaTipo);
 
     Boolean acharConta(int contaNumero);
 
