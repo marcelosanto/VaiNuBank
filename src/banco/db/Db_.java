@@ -1,4 +1,4 @@
-package db;
+package banco.db;
 
 import banco.conta.Conta;
 
