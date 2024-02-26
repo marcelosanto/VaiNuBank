@@ -9,6 +9,7 @@ import banco.db.Db_;
 import banco.loterias.Loterias;
 import banco.loterias.LoteriasTipos;
 import banco.print.Prints;
+import banco.seguranca.Seguranca;
 import usuario.Usuario;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class Banco implements BancoOperacoes {
             int numeroConta = new Random().nextInt(99999);
 
             if (!acharConta(usuario.email())) {
-                conta = new Conta(usuario, new Agencia(4293, "Vai no banco"), 2500.0, numeroConta, contaTipo, List.of());
+                conta = new Conta(new Usuario(usuario.id(), usuario.nome(), usuario.sobrenome(), usuario.cpf(), usuario.email(), Seguranca.gerarHash(usuario.senha())), new Agencia(4293, "Vai no banco"), 2500.0, numeroConta, contaTipo, List.of());
                 System.out.print("Conta criada com sucesso! ");
                 break;
             }
@@ -45,7 +46,7 @@ public class Banco implements BancoOperacoes {
 
     @Override
     public Optional<Conta> logar(String email, String senha) {
-        return db.logar(email, senha);
+        return db.logar(email, Seguranca.gerarHash(senha));
     }
 
 
