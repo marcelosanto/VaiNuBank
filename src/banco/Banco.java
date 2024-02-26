@@ -8,9 +8,9 @@ import banco.conta.Operacoes;
 import banco.db.Db_;
 import banco.loterias.Loterias;
 import banco.loterias.LoteriasTipos;
+import banco.model.usuario.Usuario;
 import banco.print.Prints;
 import banco.seguranca.Seguranca;
-import usuario.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +30,12 @@ public class Banco implements BancoOperacoes {
             int numeroConta = new Random().nextInt(99999);
 
             if (!acharConta(usuario.email())) {
-                conta = new Conta(new Usuario(usuario.id(), usuario.nome(), usuario.sobrenome(), usuario.cpf(), usuario.email(), Seguranca.gerarHash(usuario.senha())), new Agencia(4293, "Vai no banco"), 2500.0, numeroConta, contaTipo, List.of());
+                conta = new Conta(new Usuario(Seguranca.gerarID(), usuario.nome(), usuario.sobrenome(), usuario.cpf(), usuario.email(), Seguranca.gerarHash(usuario.senha())), new Agencia(4293, "Vai no banco"), 2500.0, numeroConta, contaTipo, List.of());
                 System.out.print("Conta criada com sucesso! ");
                 break;
+            } else {
+                System.out.println("Email/CPF ja cadastrado...");
+                return false;
             }
         }
 

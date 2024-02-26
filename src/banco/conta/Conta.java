@@ -1,7 +1,7 @@
 package banco.conta;
 
 import banco.agencia.Agencia;
-import usuario.Usuario;
+import banco.model.usuario.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;

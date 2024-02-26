@@ -1,6 +1,7 @@
 package banco.seguranca;
 
 import java.security.MessageDigest;
+import java.util.UUID;
 
 public class Seguranca {
     public static String gerarHash(String senha) {
@@ -22,5 +23,9 @@ public class Seguranca {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public static Long gerarID() {
+        return UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode();
     }
 }

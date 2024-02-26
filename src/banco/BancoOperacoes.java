@@ -4,7 +4,7 @@ import banco.conta.Conta;
 import banco.conta.ContaTipo;
 import banco.conta.Operacoes;
 import banco.loterias.LoteriasTipos;
-import usuario.Usuario;
+import banco.model.usuario.Usuario;
 
 import java.util.List;
 import java.util.Optional;

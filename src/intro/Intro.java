@@ -6,9 +6,10 @@ import banco.conta.ContaTipo;
 import banco.conta.Operacoes;
 import banco.loterias.LoteriasRegras;
 import banco.loterias.LoteriasTipos;
-import usuario.Usuario;
+import banco.model.usuario.Usuario;
 import utils.Parses;
 import utils.Times;
+import utils.Validadores;
 
 import java.util.*;
 
@@ -20,10 +21,10 @@ public class Intro {
         Conta conta;
         boolean logado;
 
-        custom = new CustomRetorno(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Marcelo", "Santos", "1111111", "s", "s"), ContaTipo.POUPANCA);
+        custom = new CustomRetorno(new Usuario(null, "Marcelo", "Santos", "1111111", "s", "s"), ContaTipo.POUPANCA);
         banco.criarConta(custom.usuario(), custom.contaTipo());
 
-        custom = new CustomRetorno(new Usuario(UUID.randomUUID().hashCode() < 0 ? -1 * UUID.randomUUID().hashCode() : (long) UUID.randomUUID().hashCode(), "Alice", "Santos", "1111111", "ss", "ss"), ContaTipo.CORRENTE);
+        custom = new CustomRetorno(new Usuario(null, "Alice", "Santos", "1111111", "ss", "ss"), ContaTipo.CORRENTE);
         banco.criarConta(custom.usuario(), custom.contaTipo());
 
         while (true) {
@@ -209,11 +210,11 @@ public class Intro {
         String nome = fazerPergunta("Qual é o seu nome?", scanner);
         String sobrenome = fazerPergunta("Qual é o seu sobrenome?", scanner);
         String cpf = fazerPergunta("Qual é o seu cpf?", scanner);
-        String email = fazerPergunta("Qual é o seu email?", scanner);
-        String senha = fazerPergunta("Qual é a sua senha?", scanner);
-        int gerarID = UUID.randomUUID().hashCode();
+        String email = checarEmail(scanner);
 
-        Usuario usuario = new Usuario(gerarID < 0 ? -1 * gerarID : (long) gerarID, nome, sobrenome, cpf, email, senha);
+        String senha = fazerPergunta("Qual é a sua senha?", scanner);
+
+        Usuario usuario = new Usuario(null, nome, sobrenome, cpf, email, senha);
 
         String tipoConta = fazerPergunta("Qual é o tipo de conta que deseja criar 1 - Corrente, 2 - Poupança?", scanner);
 
@@ -224,6 +225,17 @@ public class Intro {
         }
 
         return new CustomRetorno(usuario, ContaTipo.CORRENTE);
+    }
+
+    private static String checarEmail(Scanner scanner) {
+        String email = fazerPergunta("Qual é o seu email?", scanner);
+
+        while (!Validadores.validarEmail(email)) {
+            System.out.println("Email inválido!");
+            email = fazerPergunta("Qual é o seu email?", scanner);
+        }
+
+        return email;
     }
 
     private static String fazerPergunta(String pergunta, Scanner scanner) {

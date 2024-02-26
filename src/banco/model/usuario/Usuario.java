@@ -1,4 +1,4 @@
-package usuario;
+package banco.model.usuario;
 
 public record Usuario(
         Long id,
