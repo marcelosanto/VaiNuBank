@@ -41,6 +41,8 @@ extrato, além de proporcionar a participação em jogos de loteria, como Mega-S
 
 ![Main_structure.png](src%2FMain_structure.png)
 
+![Banco_structure.png](src%2Fbanco%2FBanco_structure.png)
+
 ## Como Usar
 
 1. **Compilação:**
