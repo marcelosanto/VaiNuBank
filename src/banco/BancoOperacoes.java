@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BancoOperacoes {
-    
+
     Boolean criarConta(Usuario usuario, ContaTipo contaTipo);
 
     Boolean acharConta(String email);
@@ -25,6 +25,7 @@ public interface BancoOperacoes {
 
     String transferir(Double valor, Conta conta_, String email);
 
+    Double gerarCredito();
 
     void extrato(Conta conta);
 

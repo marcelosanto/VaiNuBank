@@ -29,7 +29,7 @@ public class Banco implements BancoOperacoes {
             int numeroConta = new Random().nextInt(99999);
 
             if (!acharConta(usuario.email())) {
-                conta = new Conta(new Usuario(Seguranca.gerarID(), usuario.nome(), usuario.sobrenome(), usuario.cpf(), usuario.email(), Seguranca.gerarHash(usuario.senha())), new Agencia(4293, "Vai no banco"), 2500.0, numeroConta, contaTipo, List.of());
+                conta = new Conta(new Usuario(Seguranca.gerarID(), usuario.nome(), usuario.sobrenome(), usuario.cpf(), usuario.email(), Seguranca.gerarHash(usuario.senha())), new Agencia(4293, "Vai no banco"), gerarCredito(), numeroConta, contaTipo, List.of());
                 System.out.print("Conta criada com sucesso! ");
                 break;
             } else {
@@ -39,6 +39,12 @@ public class Banco implements BancoOperacoes {
         }
 
         return db.inserir(conta);
+    }
+
+    @Override
+    public Double gerarCredito() {
+        Random random = new Random();
+        return random.nextDouble(100.0, 10000.0);
     }
 
     @Override
