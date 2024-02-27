@@ -74,4 +74,16 @@ public class Conta {
     public void setHistorico(List<ContaOperacoes> historico) {
         this.historico = historico;
     }
+
+    @Override
+    public String toString() {
+        return "Conta{" +
+                " " + usuario +
+                ", " + agencia +
+                ", " + saldo +
+                ", " + numeroConta +
+                ", " + contaTipo +
+                ", " + historico +
+                '}';
+    }
 }

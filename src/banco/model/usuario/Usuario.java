@@ -4,7 +4,18 @@ public record Usuario(
         Long id,
         String nome,
         String sobrenome,
-        String cpf,
+        int cpf,
         String email,
         String senha) {
+
+    @Override
+    public String toString() {
+        return "Usuario { " + id +
+                ", '" + nome + '\'' +
+                ", '" + sobrenome + '\'' +
+                ", " + cpf +
+                ", '" + email + '\'' +
+                ", '" + senha + '\'' +
+                '}';
+    }
 }

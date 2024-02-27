@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BancoOperacoes {
+    
     Boolean criarConta(Usuario usuario, ContaTipo contaTipo);
 
     Boolean acharConta(String email);

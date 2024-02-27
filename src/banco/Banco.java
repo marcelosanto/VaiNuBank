@@ -21,7 +21,6 @@ public class Banco implements BancoOperacoes {
     private final Db_ db = new Db_();
     private final Loterias lotecas = new Loterias();
 
-
     @Override
     public Boolean criarConta(Usuario usuario, ContaTipo contaTipo) {
         Conta conta;

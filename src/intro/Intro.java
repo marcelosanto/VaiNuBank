@@ -21,10 +21,10 @@ public class Intro {
         Conta conta;
         boolean logado;
 
-        custom = new CustomRetorno(new Usuario(null, "Marcelo", "Santos", "1111111", "s", "s"), ContaTipo.POUPANCA);
+        custom = new CustomRetorno(new Usuario(null, "Marcelo", "Santos", 1111111, "s", "s"), ContaTipo.POUPANCA);
         banco.criarConta(custom.usuario(), custom.contaTipo());
 
-        custom = new CustomRetorno(new Usuario(null, "Alice", "Santos", "1111111", "ss", "ss"), ContaTipo.CORRENTE);
+        custom = new CustomRetorno(new Usuario(null, "Alice", "Santos", 1111112, "ss", "ss"), ContaTipo.CORRENTE);
         banco.criarConta(custom.usuario(), custom.contaTipo());
 
         while (true) {
@@ -41,7 +41,6 @@ public class Intro {
                             break;
                         }
                     }
-
                     break;
 
                 case "2":
@@ -209,7 +208,7 @@ public class Intro {
     public static CustomRetorno criarUser(Scanner scanner) {
         String nome = fazerPergunta("Qual é o seu nome?", scanner);
         String sobrenome = fazerPergunta("Qual é o seu sobrenome?", scanner);
-        String cpf = fazerPergunta("Qual é o seu cpf?", scanner);
+        int cpf = Parses.parseInt(fazerPergunta("Qual é o seu cpf?", scanner));
         String email = checarEmail(scanner);
 
         String senha = fazerPergunta("Qual é a sua senha?", scanner);
