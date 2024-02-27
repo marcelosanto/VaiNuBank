@@ -21,13 +21,7 @@ public class Intro {
         Conta conta;
         boolean logado;
 
-        custom = new CustomRetorno(new Usuario(null, "Marcelo", "Santos", 1111111, "s", "s"), ContaTipo.POUPANCA);
-        banco.criarConta(custom.usuario(), custom.contaTipo());
-
-        custom = new CustomRetorno(new Usuario(null, "Alice", "Santos", 1111112, "ss", "ss"), ContaTipo.CORRENTE);
-        banco.criarConta(custom.usuario(), custom.contaTipo());
-
-        while (true) {
+   while (true) {
             Menu.menuBancoPrincipal();
             String escolha = sc.nextLine();
 
