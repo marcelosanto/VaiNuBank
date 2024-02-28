@@ -11,9 +11,9 @@ import java.util.Optional;
 
 public interface BancoOperacoes {
 
-    Boolean criarConta(Usuario usuario, ContaTipo contaTipo);
+    boolean criarConta(Usuario usuario, ContaTipo contaTipo);
 
-    Boolean acharConta(String email);
+    boolean acharConta(String email, int cpf);
 
     Optional<Conta> logar(String email, String senha);
 
@@ -23,7 +23,7 @@ public interface BancoOperacoes {
 
     String sacar(Double valor, Conta conta_);
 
-    String transferir(Double valor, Conta conta_, String email);
+    String transferir(Double valor, Conta conta_, String email, int cpf);
 
     Double gerarCredito();
 
@@ -37,4 +37,5 @@ public interface BancoOperacoes {
 
     List<Conta> listarContas();
 
+    String enviarPix(String login, String senha, String contaPix, Double valorPix);
 }

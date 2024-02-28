@@ -17,9 +17,14 @@ public class Intro {
     public static void inicio() {
         Scanner sc = new Scanner(System.in);
         Banco banco = new Banco();
-        CustomRetorno custom;
         Conta conta;
         boolean logado;
+
+        Usuario usuario = new Usuario(1000L,   "Marcelo", "Santos", 1111, "s@s.com", "s");
+        Usuario usuario2 = new Usuario(1000L,   "Alice", "Santos", 2222, "ss@s.com", "ss");
+
+        banco.criarConta(usuario, ContaTipo.POUPANCA);
+        banco.criarConta(usuario2, ContaTipo.CORRENTE);
 
    while (true) {
             Menu.menuBancoPrincipal();
@@ -65,8 +70,7 @@ public class Intro {
                                     System.out.println("Transferir");
                                     String destino = fazerPergunta("Qual é o email da conta destino?", sc);
                                     valor = Parses.parseDouble(fazerPergunta("Qual é o valor?", sc));
-                                    System.out.println(banco.transferir(valor, conta, destino));
-
+                                    System.out.println(banco.transferir(valor, conta, destino, 0));
                                     break;
                                 case "4":
                                     System.out.println("Extrato");
@@ -83,13 +87,22 @@ public class Intro {
                             }
                         }
                     }
-
                     break;
 
                 case "3":
+                    //PIX
+                    System.out.println("MENU PIX");
+                    String login = fazerPergunta("Digite seu email/cpf: ", sc);
+                    String senha = fazerPergunta("Digite sua senha: ", sc);
+                    String contaPix = fazerPergunta("Digite a chave pix, 'email/cpf' ", sc);
+                    Double valorPix = Parses.parseDouble(fazerPergunta("Digite o valor do pix", sc));
+                    System.out.println(banco.enviarPix(login, senha, contaPix, valorPix));
+                    break;
+
+                case "4":
                     verContas(banco, sc);
                     break;
-                case "4":
+                case "5":
                     System.out.println("Saindo...");
                     sc.close();
                     return;

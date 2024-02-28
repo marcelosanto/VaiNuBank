@@ -22,13 +22,13 @@ public class Banco implements BancoOperacoes {
     private final Loterias lotecas = new Loterias();
 
     @Override
-    public Boolean criarConta(Usuario usuario, ContaTipo contaTipo) {
+    public boolean criarConta(Usuario usuario, ContaTipo contaTipo) {
         Conta conta;
 
         while (true) {
             int numeroConta = new Random().nextInt(99999);
 
-            if (!acharConta(usuario.email())) {
+            if (!acharConta(usuario.email(), 0) || !acharConta(null, usuario.cpf())) {
                 conta = new Conta(new Usuario(Seguranca.gerarID(), usuario.nome(), usuario.sobrenome(), usuario.cpf(), usuario.email(), Seguranca.gerarHash(usuario.senha())), new Agencia(4293, "Vai no banco"), gerarCredito(), numeroConta, contaTipo, List.of());
                 System.out.print("Conta criada com sucesso! ");
                 break;
@@ -48,8 +48,8 @@ public class Banco implements BancoOperacoes {
     }
 
     @Override
-    public Boolean acharConta(String email) {
-        return db.achar(email) != null;
+    public boolean acharConta(String email, int cpf) {
+        return db.achar(email, cpf) != null;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class Banco implements BancoOperacoes {
 
     @Override
     public String depositar(Double valor, Conta conta_, Operacoes operacoes, String nome) {
-        Conta conta = db.achar(conta_.getUsuario().email());
+        Conta conta = db.achar(conta_.getUsuario().email(), conta_.getUsuario().cpf());
 
         if (conta != null) {
             conta.setSaldo(conta.getSaldo() + valor);
@@ -85,9 +85,29 @@ public class Banco implements BancoOperacoes {
     @Override
     public String cobrar(Double valor, Conta conta_, Operacoes operacoes, String nome) {
 
-        Conta conta = db.achar(conta_.getUsuario().email());
+        Conta conta = db.achar(conta_.getUsuario().email(), conta_.getUsuario().cpf());
 
-        if (conta != null && conta.getSaldo() >= valor) {
+        if (conta.getContaTipo().equals(ContaTipo.POUPANCA)) {
+            Double juros = ((2.0 / 100.0) * valor);
+            Double valorMenosPorcentagem = valor - juros;
+
+            if (valorMenosPorcentagem + juros > conta.getSaldo()) {
+                return "Saldo insuficiente";
+            }
+
+            List<ContaOperacoes> historico = new ArrayList<>();
+
+            if (!conta.getHistorico().isEmpty()) {
+                historico.addAll(conta.getHistorico());
+            }
+
+            conta.setSaldo(conta.getSaldo() - valorMenosPorcentagem - juros);
+            historico.add(new ContaOperacoes(operacoes, valorMenosPorcentagem, nome, juros));
+            conta.setHistorico(historico);
+            db.atualizar(conta);
+
+            return operacoes.name() + " realizada";
+        } else if (conta.getSaldo() >= valor) {
 
             conta.setSaldo(conta.getSaldo() - valor);
 
@@ -105,7 +125,7 @@ public class Banco implements BancoOperacoes {
             return "Valor cobrado";
         }
 
-        return "Erro ao realizar a cobrança";
+        return "Erro ao realizar a " + operacoes.name();
     }
 
 
@@ -156,8 +176,8 @@ public class Banco implements BancoOperacoes {
     }
 
     @Override
-    public String transferir(Double valor, Conta conta, String email) {
-        Conta contaDestino = db.achar(email);
+    public String transferir(Double valor, Conta conta, String email, int cpf) {
+        Conta contaDestino = db.achar(email, cpf);
 
         if (conta != null && contaDestino != null) {
             if (conta.getSaldo() < 0 && valor > conta.getSaldo()) {
@@ -211,6 +231,23 @@ public class Banco implements BancoOperacoes {
     @Override
     public List<Conta> listarContas() {
         return db.getDbContas();
+    }
+
+    @Override
+    public String enviarPix(String login, String senha, String contaPix, Double valorPix) {
+
+        if (logar(login, senha).isPresent()) {
+            Conta conta = db.achar(login, 0);
+            Conta contaP = db.achar(contaPix, 0);
+
+            cobrar(valorPix, conta, Operacoes.TRANSFERENCIA, contaP.getUsuario().nome());
+            depositar(valorPix, contaP, Operacoes.RECEBIDO, conta.getUsuario().nome());
+
+            return "Pix realizado com sucesso";
+        }
+
+
+        return "Erro desconhecido";
     }
 
 }

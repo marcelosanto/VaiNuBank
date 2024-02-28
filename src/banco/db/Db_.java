@@ -32,9 +32,9 @@ public class Db_ implements Db {
     }
 
     @Override
-    public Conta achar(String email) {
+    public Conta achar(String email, int cpf) {
         for (Conta conta : dbContas) {
-            if (Objects.equals(conta.getUsuario().email(), email)) {
+            if (Objects.equals(conta.getUsuario().email(), email) || Objects.equals(conta.getUsuario().cpf(), cpf)) {
                 return conta;
             }
         }

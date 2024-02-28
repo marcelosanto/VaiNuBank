@@ -14,7 +14,7 @@ public interface Db {
 
     Boolean exluir(Conta conta);
 
-    Conta achar(String email);
+    Conta achar(String email, int cpf);
 
     Optional<Conta> logar(String email, String senha);
 

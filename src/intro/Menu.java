@@ -19,8 +19,9 @@ public class Menu {
         System.out.println("Escolha uma opção:");
         System.out.println("1 - Criar uma conta");
         System.out.println("2 - Acessar a conta");
-        System.out.println("3 - Ver Contas");
-        System.out.println("4 - Sair");
+        System.out.println("3 - Pix");
+        System.out.println("4 - Ver Contas");
+        System.out.println("5 - Sair");
         System.out.print(": ");
     }
 
