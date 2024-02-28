@@ -73,26 +73,7 @@ public class Intro {
                                     banco.extrato(conta);
                                     break;
                                 case "5":
-                                    System.out.println("Bem vindo a loterias online, \nMega Sena com premio de £3.000.000 Quatrums, \nQuina com premio de £200.000 Quatrums, \nLotofacil com premio de £500.000 Quatrums, \nTimemania com premio de £100.000 Quatrums.");
-
-                                    String loteca = fazerPergunta("1 - Mega Sena, 2 - Quina, 3 - Lotofácil, 4 - Timemania", sc);
-
-                                    switch (loteca) {
-                                        case "1":
-                                            sorteio(sc, banco, conta, LoteriasTipos.MEGA_SENA);
-                                            break;
-                                        case "2":
-                                            sorteio(sc, banco, conta, LoteriasTipos.QUINA);
-                                            break;
-                                        case "3":
-                                            sorteio(sc, banco, conta, LoteriasTipos.LOTOFACIL);
-                                            break;
-                                        case "4":
-                                            sorteio(sc, banco, conta, LoteriasTipos.TIMEMANIA);
-                                            break;
-                                        default:
-                                            System.out.println("Opção inválida");
-                                    }
+                                    loteria(sc, banco, conta);
                                     break;
                                 case "6":
                                     System.out.println("Saindo...");
@@ -106,11 +87,7 @@ public class Intro {
                     break;
 
                 case "3":
-                    System.out.println("Ver Contas");
-                    List<Conta> contas = banco.listarContas();
-                    Menu.verContas(contas);
-                    System.out.println("Aperte ENTER para voltar");
-                    sc.nextLine();
+                    verContas(banco, sc);
                     break;
                 case "4":
                     System.out.println("Saindo...");
@@ -122,6 +99,46 @@ public class Intro {
 
         }
 
+    }
+
+    private static void loteria(Scanner sc, Banco banco, Conta conta) {
+        System.out.println("""
+                Bem vindo a loterias online,\s
+                Mega Sena com premio de £3.000.000 Quatrums,\s
+                Quina com premio de £200.000 Quatrums,\s
+                Lotofacil com premio de £500.000 Quatrums,\s
+                Timemania com premio de £100.000 Quatrums.""");
+
+        String loteca = fazerPergunta("1 - Mega Sena, 2 - Quina, 3 - Lotofácil, 4 - Timemania", sc);
+
+        switch (loteca) {
+            case "1":
+                sorteio(sc, banco, conta, LoteriasTipos.MEGA_SENA);
+                break;
+            case "2":
+                sorteio(sc, banco, conta, LoteriasTipos.QUINA);
+                break;
+            case "3":
+                sorteio(sc, banco, conta, LoteriasTipos.LOTOFACIL);
+                break;
+            case "4":
+                sorteio(sc, banco, conta, LoteriasTipos.TIMEMANIA);
+                break;
+            default:
+                System.out.println("Opção inválida");
+        }
+    }
+
+    private static void verContas(Banco banco, Scanner sc) {
+        List<Conta> contas = banco.listarContas();
+
+        if (!contas.isEmpty()){
+            Menu.verContas(contas);
+        } else {
+            System.out.println("Sem contas registradas...");
+        }
+        System.out.println("Aperte ENTER para voltar");
+        sc.nextLine();
     }
 
     private static void sorteio(Scanner sc, Banco banco, Conta conta, LoteriasTipos tipos) {
